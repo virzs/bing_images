@@ -1,0 +1,13 @@
+[package]
+name = "bing-images-rocket"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+config = "0.14.1"
+mongodb = "3.1.0"
+rocket = { version = "0.5.1", features = ["json"] }
+serde = "1.0.214"
+serde_json = "1.0.132"
+tokio = "1.41.0"
+futures = "0.3.31"
