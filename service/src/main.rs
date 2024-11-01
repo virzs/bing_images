@@ -35,7 +35,7 @@ fn index() -> &'static str {
 }
 
 #[launch]
-async fn rocket() {
+async fn rocket() -> _ {
     let mongo_client = db::init_mongo().await;
     let database = Arc::new(mongo_client.database("search"));
     let collection = database.collection::<models::bing_image::BingImage>("bing_img");
