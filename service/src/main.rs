@@ -5,6 +5,9 @@ use std::sync::Arc;
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::http::Header;
 use rocket::{Request, Response};
+use tokio::time::{interval, Duration};
+use rocket::tokio::task;
+use rocket::State;
 
 mod config;
 mod db;
@@ -40,6 +43,16 @@ async fn rocket() -> _ {
     let database = Arc::new(mongo_client.database("search"));
     let collection = database.collection::<models::bing_image::BingImage>("bing_img");
 
+    // 启动定时任务
+    let collection_clone = collection.clone();
+    task::spawn(async move {
+        let mut interval = interval(Duration::from_secs(4 * 60 * 60));
+        loop {
+            interval.tick().await;
+            let state = State::from(&collection_clone);
+            routes::bing_image::get_today_bing_images(&state).await;
+        }
+    });
 
     rocket::build()
         .attach(CORS)
