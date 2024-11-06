@@ -7,6 +7,7 @@ use rocket::Route;
 use rocket::serde::json::Json;
 use rocket::serde::Deserialize;
 use rocket::form::FromForm;
+use rocket::yansi::Paint;
 
 #[derive(FromForm, Deserialize)]
 pub struct FilterParams {
@@ -38,7 +39,7 @@ async fn fetch_and_store_image(
     if let Some(img) = res["images"].as_array().and_then(|arr| arr.get(0)) {
         let img: BingImage = serde_json::from_value(img.clone()).unwrap();
 
-        info!("图像{}", img.title.clone().unwrap_or("无标题".to_string()));
+        info!("图像 {}", img.title.clone().unwrap_or("无标题".to_string()));
 
         let has = collection.find_one(doc! { "startdate": &img.startdate, "mkt": market }).await.unwrap();
         if has.is_none() {
@@ -49,9 +50,9 @@ async fn fetch_and_store_image(
                 mkt: Some(market.to_string()),
                 ..img
             }).await.unwrap();
-            info!("添加图像成功");
+            info!("{}", "添加图像成功".green());
         } else {
-            info!("图像{} 已存在", has.unwrap().title.clone().unwrap_or("无标题".to_string()));
+            info!("图像 {} 已存在", has.unwrap().title.clone().unwrap_or("无标题".to_string()));
         }
     }
 }
