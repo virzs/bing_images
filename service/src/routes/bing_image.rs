@@ -44,9 +44,9 @@ async fn fetch_and_store_image(
         let has = collection.find_one(doc! { "startdate": &img.startdate, "mkt": market }).await.unwrap();
         if has.is_none() {
             collection.insert_one(BingImage {
-                url: format!("{}{:?}", base_url, img.url).into(),
-                urlbase: format!("{}{:?}", base_url, img.urlbase).into(),
-                quiz: format!("{}{:?}", base_url, img.quiz).into(),
+                url: format!("{}{}", base_url, img.url.unwrap_or_default()).into(),
+                urlbase: format!("{}{}", base_url, img.urlbase.unwrap_or_default()).into(),
+                quiz: format!("{}{}", base_url, img.quiz.unwrap_or_default()).into(),
                 mkt: Some(market.to_string()),
                 ..img
             }).await.unwrap();
