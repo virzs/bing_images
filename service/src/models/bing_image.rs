@@ -1,9 +1,11 @@
 use serde::{Deserialize, Serialize};
 use mongodb::bson::oid::ObjectId;
+use schemars::JsonSchema;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct BingImage {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
+    #[schemars(skip)]
     pub id: Option<ObjectId>,
     pub url: Option<String>,
     pub title: Option<String>,

@@ -8,6 +8,8 @@ use rocket::{Request, Response};
 use tokio::time::{interval, Duration};
 use rocket::tokio::task;
 use rocket::State;
+use rocket_okapi::{openapi, swagger_ui::*};
+use crate::routes::bing_image::all_routes;
 
 mod config;
 mod db;
@@ -32,6 +34,7 @@ impl Fairing for CORS {
     }
 }
 
+#[openapi]
 #[get("/")]
 fn index() -> &'static str {
     "Hello, world!"
@@ -58,5 +61,10 @@ async fn rocket() -> _ {
         .attach(CORS)
         .manage(collection)
         .mount("/", routes![index])
-        .mount("/", routes::bing_image::all_routes())
+        .mount("/", all_routes())
+        .mount("/docs", make_swagger_ui(&SwaggerUIConfig {
+            url: "/openapi.json".to_string(),
+            ..Default::default()
+        }))
+        .mount("/openapi.json", rocket_okapi::openapi_get_routes![routes::bing_image::get_bing_images])
 }

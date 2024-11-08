@@ -8,8 +8,10 @@ use rocket::serde::json::Json;
 use rocket::serde::Deserialize;
 use rocket::form::FromForm;
 use rocket::yansi::Paint;
+use rocket_okapi::{openapi, openapi_get_routes};
+use schemars::JsonSchema;
 
-#[derive(FromForm, Deserialize)]
+#[derive(FromForm, Deserialize, JsonSchema)]
 pub struct FilterParams {
     startdate: Option<String>,
     enddate: Option<String>,
@@ -92,6 +94,7 @@ fn build_filter(params: &FilterParams) -> Document {
     filter
 }
 
+#[openapi]
 #[get("/bing_images?<params..>")]
 pub async fn get_bing_images(collection: &State<Collection<BingImage>>, params: FilterParams) -> Json<Vec<BingImage>> {
     let filter = build_filter(&params);
@@ -112,5 +115,5 @@ pub async fn get_bing_images(collection: &State<Collection<BingImage>>, params: 
 }
 
 pub fn all_routes() -> Vec<Route> {
-    routes![get_bing_images]
+    openapi_get_routes![get_bing_images]
 }
