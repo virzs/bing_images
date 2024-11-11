@@ -36,17 +36,6 @@ brew install docker
 sudo apt-get install docker.io
 ```
 
-安装 `openssl` 开发包
-
-```bash
-# Windows
-choco install openssl
-# MacOS
-brew install openssl
-# Linux
-sudo apt-get install libssl-dev
-```
-
 使用 `cross` 构建 Windows 版本
 
 ```bash
