@@ -84,11 +84,11 @@ fn build_filter(params: &FilterParams) -> Document {
     let mut filter = doc! {};
 
     if let Some(start) = &params.startdate {
-        filter.insert("startdate", doc! { "$gte": start });
+        filter.insert("startdate", doc! { "$eq": start });
     }
 
     if let Some(end) = &params.enddate {
-        filter.insert("enddate", doc! { "$lte": end });
+        filter.insert("enddate", doc! { "$eq": end });
     }
 
     filter
@@ -98,7 +98,6 @@ fn build_filter(params: &FilterParams) -> Document {
 #[get("/bing_images?<params..>")]
 pub async fn get_bing_images(collection: &State<Collection<BingImage>>, params: FilterParams) -> Json<Vec<BingImage>> {
     let filter = build_filter(&params);
-
 
     let cursor = collection
         .inner()
