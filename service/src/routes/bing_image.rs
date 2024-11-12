@@ -84,10 +84,13 @@ fn build_filter(params: &FilterParams) -> Document {
     let mut filter = doc! {};
 
     if let Some(start) = &params.startdate {
-        filter.insert("startdate", doc! { "$eq": start });
-    }
-
-    if let Some(end) = &params.enddate {
+        if let Some(end) = &params.enddate {
+            filter.insert("enddate", doc! { "$gte": start });
+            filter.insert("enddate", doc! { "$lte": end });
+        } else {
+            filter.insert("startdate", doc! { "$eq": start });
+        }
+    } else if let Some(end) = &params.enddate {
         filter.insert("enddate", doc! { "$eq": end });
     }
 
