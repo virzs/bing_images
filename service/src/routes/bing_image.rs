@@ -64,7 +64,7 @@ pub async fn get_today_bing_images(collection: &State<Collection<BingImage>>) {
 
     let locales = vec![
         ("https://cn.bing.com/HPImageArchive.aspx", "zh-CN", "https://cn.bing.com"),
-        ("https://www.bing.com/HPImageArchive.aspx", "en-US", "https://www.bing.com"),
+        ("https://global.bing.com/HPImageArchive.aspx", "en-US", "https://www.bing.com"),
         // Add more locales here
     ];
 
