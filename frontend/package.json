@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "run": "trunk serve",
+    "build:css": "tailwindcss -i ./styles/tailwind.css -o ./styles/output.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.15"
+  }
+}

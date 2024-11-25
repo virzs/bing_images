@@ -4,4 +4,22 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+console_error_panic_hook = "0.1.7"
 leptos = { version = "0.6.15", features = ["csr", "nightly"] }
+leptos_meta = "0.6.15"
+leptos_router = { version = "0.6.15", features = ["csr", "nightly"] }
+reqwest = "0.12.9"
+serde = { version = "1.0.215", features = ["derive"] }
+serde_json = "1.0.133"
+styled = "0.2.0"
+thaw = { version = "0.3.4", features = ["csr"] }
+wasm-bindgen = "0.2.95"
+wasm-bindgen-futures = "0.4"
+web-sys = "0.3.72"
+
+[package.metadata.leptos.style]
+# Main style file. If scss or sass then it will be compiled to css.
+# the parent folder will be watched for changes
+file = "output.css"
+# A https://browsersl.ist query
+browserquery = "defaults"
