@@ -1,15 +1,16 @@
 #[macro_use]
 extern crate rocket;
 
-use std::sync::Arc;
+use crate::routes::bing_image::all_routes;
+use config::settings::get_settings_from_file;
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::http::Header;
-use rocket::{Request, Response};
-use tokio::time::{interval, Duration};
 use rocket::tokio::task;
 use rocket::State;
+use rocket::{Request, Response};
 use rocket_okapi::{openapi, swagger_ui::*};
-use crate::routes::bing_image::all_routes;
+use std::sync::Arc;
+use tokio::time::{interval, Duration};
 
 mod config;
 mod db;
@@ -29,7 +30,10 @@ impl Fairing for CORS {
 
     async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
         response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
-        response.set_header(Header::new("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"));
+        response.set_header(Header::new(
+            "Access-Control-Allow-Methods",
+            "GET, POST, PUT, DELETE",
+        ));
         response.set_header(Header::new("Access-Control-Allow-Headers", "Content-Type"));
     }
 }
@@ -41,10 +45,12 @@ fn index() -> &'static str {
 }
 
 #[launch]
-async fn rocket() -> _ {
-    let mongo_client = db::init_mongo().await;
-    let database = Arc::new(mongo_client.database("search"));
-    let collection = database.collection::<models::bing_image::BingImage>("bing_img");
+async fn rocket() -> rocket::Rocket<rocket::Build> {
+    let settings = get_settings_from_file("config.toml");
+    let mongo_client = db::init_mongo(&settings).await;
+    let database = Arc::new(mongo_client.database(&settings.mongo.database));
+    let collection =
+        database.collection::<models::bing_image::BingImage>(&settings.mongo.collection);
 
     // 启动定时任务
     let collection_clone = collection.clone();
@@ -62,9 +68,15 @@ async fn rocket() -> _ {
         .manage(collection)
         .mount("/", routes![index])
         .mount("/", all_routes())
-        .mount("/docs", make_swagger_ui(&SwaggerUIConfig {
-            url: "/openapi.json".to_string(),
-            ..Default::default()
-        }))
-        .mount("/openapi.json", rocket_okapi::openapi_get_routes![routes::bing_image::get_bing_images])
+        .mount(
+            "/docs",
+            make_swagger_ui(&SwaggerUIConfig {
+                url: "/openapi.json".to_string(),
+                ..Default::default()
+            }),
+        )
+        .mount(
+            "/openapi.json",
+            rocket_okapi::openapi_get_routes![routes::bing_image::get_bing_images],
+        )
 }

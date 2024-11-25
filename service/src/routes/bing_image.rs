@@ -156,6 +156,19 @@ pub async fn get_bing_images(
     Json(images)
 }
 
+#[openapi]
+#[get("/bing_images/list")]
+pub async fn get_bing_images_list(collection: &State<Collection<BingImage>>) -> Json<Vec<BingImage>> {
+    let cursor = collection
+        .find(doc! {})
+        .await
+        .unwrap();
+
+    let images: Vec<BingImage> = cursor.try_collect().await.unwrap();
+
+    Json(images)
+}
+
 pub fn all_routes() -> Vec<Route> {
     openapi_get_routes![get_bing_images]
 }
